@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <pattern id="dots" width="26" height="26" patternUnits="userSpaceOnUse">
+      <circle cx="2" cy="2" r="1.5" fill="#E2E8F0" />
+    </pattern>
+  </defs>
+
+  <rect width="1600" height="1000" fill="#FFFDF5" />
+  <rect width="1600" height="1000" fill="url(#dots)" />
+
+  <!-- Playful floating shapes (edge-weighted so content stays readable) -->
+  <circle cx="1470" cy="120" r="130" fill="#8B5CF6" opacity="0.10" />
+  <circle cx="1530" cy="790" r="95" fill="#F472B6" opacity="0.12" />
+  <circle cx="120" cy="900" r="110" fill="#34D399" opacity="0.10" />
+
+  <rect x="60" y="90" width="120" height="120" rx="26" fill="#FBBF24" opacity="0.16" transform="rotate(14 120 150)" />
+  <rect x="1380" y="430" width="90" height="90" rx="20" fill="#F472B6" opacity="0.12" transform="rotate(-12 1425 475)" />
+
+  <polygon points="140,800 210,920 70,920" fill="#34D399" opacity="0.14" />
+  <polygon points="1450,640 1500,730 1400,730" fill="#8B5CF6" opacity="0.12" />
+
+  <path d="M 210 470 q 40 -46 80 0 t 80 0" stroke="#F472B6" stroke-width="8" fill="none" opacity="0.18" stroke-linecap="round" />
+  <path d="M 1300 300 q 34 -38 68 0 t 68 0" stroke="#34D399" stroke-width="7" fill="none" opacity="0.18" stroke-linecap="round" />
+  <path d="M 760 930 q 34 -38 68 0 t 68 0" stroke="#FBBF24" stroke-width="7" fill="none" opacity="0.20" stroke-linecap="round" />
+</svg>

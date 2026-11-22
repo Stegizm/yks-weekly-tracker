@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="YKS Tracker">
+  <rect x="0" y="0" width="512" height="512" rx="112" fill="#8B5CF6"/>
+  <rect x="12" y="12" width="488" height="488" rx="102" fill="none" stroke="#1E293B" stroke-width="16"/>
+  <text x="256" y="248" text-anchor="middle" font-family="Liberation Sans, Arial, sans-serif"
+        font-size="158" font-weight="700" fill="#FFFFFF" letter-spacing="2">YKS</text>
+  <polyline points="120,372 204,318 286,344 392,262" fill="none" stroke="#34D399"
+            stroke-width="18" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="392" cy="262" r="18" fill="#FBBF24"/>
+  <circle cx="120" cy="372" r="12" fill="#F472B6"/>
+</svg>

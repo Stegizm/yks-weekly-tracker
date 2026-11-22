@@ -1,0 +1,21 @@
+# OS / editör
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Loglar
+*.log
+
+# Vercel / env
+.vercel
+.env
+.env.*
+!.env.example
+
+# Node
+node_modules/
+
+# Yerel test artefaktları
+_*test.html
+_*frame.html

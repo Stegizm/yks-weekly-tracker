@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#FFFDF5" />
+<title>YD Studios — YKS Haftalık Takip</title>
+<meta name="description" content="YD Studios — YKS Haftalık Takip: program, soru takibi, deneme analizi, konu matrisi ve rütbe. Tek yerde, senin ritminde." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<link rel="icon" type="image/svg+xml" href="assets/icon.svg" />
+<link rel="manifest" href="manifest.json" />
+<style>
+  :root {
+    --cream: #FFFDF5;
+    --ink: #1E293B;
+    --violet: #8B5CF6;
+    --violet-deep: #6D28D9;
+    --pink: #F472B6;
+    --amber: #FBBF24;
+    --mint: #34D399;
+    --mint-deep: #047857;
+    --ink-65: rgba(30, 41, 59, 0.66);
+    --ink-45: rgba(30, 41, 59, 0.46);
+    --line: rgba(30, 41, 59, 0.10);
+    --shadow: 0 8px 0 0 var(--ink);
+    --shadow-sm: 0 6px 0 0 var(--ink);
+    --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+    --font-display: "Outfit", system-ui, sans-serif;
+    --font-body: "Plus Jakarta Sans", system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--cream);
+    color: var(--ink);
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+  h1, h2, h3, .display { font-family: var(--font-display); letter-spacing: -0.03em; margin: 0; }
+  p { margin: 0; }
+  a { color: inherit; text-decoration: none; }
+  img, svg { display: block; }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 0 24px; }
+  @media (min-width: 1024px) { .wrap { padding: 0 32px; } }
+
+  /* ---------- Blobs & motion ---------- */
+  .blob1 { border-radius: 46% 54% 62% 38% / 54% 42% 58% 46%; }
+  .blob2 { border-radius: 60% 40% 33% 67% / 50% 56% 44% 50%; }
+  @keyframes floaty { 0%,100% { transform: translateY(0) rotate(0); } 50% { transform: translateY(-16px) rotate(4deg); } }
+  @keyframes floaty2 { 0%,100% { transform: translateY(0) rotate(0); } 50% { transform: translateY(-12px) rotate(-3deg); } }
+  @keyframes spin-slow { to { transform: rotate(360deg); } }
+  @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+  .floaty { animation: floaty 7s ease-in-out infinite; }
+  .floaty-slow { animation: floaty2 10s ease-in-out infinite; }
+  .spin-slow { animation: spin-slow 22s linear infinite; }
+
+  /* ---------- Nav ---------- */
+  .nav {
+    position: sticky; top: 0; z-index: 50;
+    background: rgba(255, 253, 245, 0.86);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--line);
+  }
+  .nav__in { display: flex; align-items: center; justify-content: space-between; height: 76px; gap: 16px; }
+  .brand { display: flex; align-items: center; gap: 11px; }
+  .brand__logo {
+    width: 40px; height: 40px; display: grid; place-items: center;
+    background: var(--cream); border: 2px solid var(--ink);
+    border-radius: 13px; overflow: hidden; flex: none;
+    box-shadow: var(--shadow-sm);
+  }
+  .brand__logo img { width: 100%; height: 100%; object-fit: contain; padding: 3px; }
+  .brand__name { font-family: var(--font-display); font-size: 19px; font-weight: 800; }
+  .brand__name span { color: var(--violet-deep); }
+  .nav__links { display: none; gap: 34px; font-size: 15px; font-weight: 600; color: var(--ink-65); }
+  @media (min-width: 900px) { .nav__links { display: flex; } }
+  .nav__links a:hover { color: var(--ink); }
+  .nav__cta { display: none; }
+  @media (min-width: 640px) { .nav__cta { display: inline-flex; } }
+  .pill {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 10px 18px; border-radius: 999px;
+    background: var(--ink); color: var(--cream);
+    font-size: 14px; font-weight: 700; border: 0; cursor: pointer;
+    transition: background .2s, transform .2s var(--ease);
+  }
+  .pill:hover { background: var(--violet); }
+  .nav__burger {
+    display: grid; place-items: center; width: 42px; height: 42px;
+    border-radius: 12px; background: rgba(30,41,59,.06); border: 0; cursor: pointer; font-size: 18px;
+  }
+  @media (min-width: 900px) { .nav__burger { display: none; } }
+  .nav__mobile { display: none; padding: 12px 24px 18px; border-top: 1px solid var(--line); }
+  .nav__mobile.is-open { display: flex; flex-direction: column; gap: 12px; }
+  .nav__mobile a { font-weight: 700; padding: 8px 0; color: var(--ink-65); }
+
+  /* ---------- Buttons ---------- */
+  .btn {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 15px 26px; border-radius: 999px;
+    font-family: var(--font-body); font-size: 15px; font-weight: 800;
+    cursor: pointer; border: 0; transition: all .2s var(--ease);
+  }
+  .btn--primary { background: var(--violet); color: #fff; box-shadow: var(--shadow); }
+  .btn--primary:hover { transform: translateY(4px); box-shadow: 0 4px 0 0 var(--ink); }
+  .btn--outline { background: var(--cream); color: var(--ink); border: 2px solid var(--ink); }
+  .btn--outline:hover { background: var(--amber); }
+  .btn--ink { background: var(--ink); color: var(--cream); box-shadow: 0 8px 0 0 rgba(0,0,0,.25); }
+  .btn--ink:hover { transform: translateY(4px); box-shadow: 0 4px 0 0 rgba(0,0,0,.25); }
+  .btn--cream { background: var(--cream); color: var(--ink); }
+  .btn--cream:hover { background: var(--amber); }
+
+  /* ---------- Hero ---------- */
+  .hero { position: relative; overflow: hidden; }
+  .hero__blobs { position: absolute; inset: 0; pointer-events: none; }
+  .hero__grid { position: relative; display: grid; gap: 48px; padding-top: 56px; padding-bottom: 72px; }
+  @media (min-width: 1024px) { .hero__grid { grid-template-columns: 7fr 5fr; align-items: center; padding-top: 84px; padding-bottom: 100px; } }
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(52,211,153,.16); color: var(--mint-deep);
+    padding: 8px 15px; border-radius: 999px; font-size: 13px; font-weight: 700;
+  }
+  .hero h1 { font-size: clamp(2.6rem, 7vw, 5.1rem); font-weight: 900; line-height: 0.98; margin-top: 20px; }
+  .accent { position: relative; display: inline-block; color: var(--violet-deep); }
+  .accent svg { position: absolute; left: 0; bottom: -8px; width: 100%; height: 16px; overflow: visible; }
+  .hero__lead { max-width: 31rem; color: var(--ink-65); font-size: 17px; line-height: 1.6; margin-top: 22px; }
+  .hero__btns { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 28px; }
+  .proof { display: flex; align-items: center; gap: 14px; margin-top: 30px; }
+  .avatars { display: flex; }
+  .avatars span {
+    width: 40px; height: 40px; border-radius: 50%;
+    display: grid; place-items: center; font-size: 14px; font-weight: 800;
+    border: 3px solid var(--cream); margin-left: -10px;
+  }
+  .avatars span:first-child { margin-left: 0; }
+  .proof p { font-size: 13px; color: var(--ink-45); font-weight: 600; max-width: 22rem; }
+
+  .bento { position: relative; display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .stat-card {
+    border-radius: 30px; padding: 24px; height: 172px;
+    display: flex; flex-direction: column; justify-content: space-between;
+  }
+  .stat-card--wide { grid-column: span 2; }
+  .stat-card__ico { font-size: 30px; }
+  .stat-card__label { font-size: 13px; font-weight: 700; opacity: .85; }
+  .stat-card__val { font-family: var(--font-display); font-size: 34px; font-weight: 900; line-height: 1; margin-top: 4px; }
+  .stat-card__hint { font-size: 11.5px; font-weight: 700; opacity: .72; margin-top: 3px; }
+  .card-teal { background: var(--mint); color: #052a21; box-shadow: 0 18px 36px -14px rgba(52,211,153,.7); }
+  .card-sun { background: var(--amber); color: var(--ink); box-shadow: 0 18px 36px -14px rgba(251,191,36,.7); }
+  .card-coral { background: var(--pink); color: #3b0a24; box-shadow: 0 18px 36px -14px rgba(244,114,182,.7); }
+  .badge {
+    position: absolute; top: -26px; right: -6px;
+    width: 92px; height: 92px; border-radius: 50%;
+    background: var(--cream); border: 2px solid var(--ink);
+    display: grid; place-items: center; text-align: center;
+    font-size: 11px; font-weight: 800; line-height: 1.15; transform: rotate(8deg);
+  }
+
+  /* ---------- Marquee ---------- */
+  .marquee { background: var(--ink); color: var(--cream); padding: 26px 0; overflow: hidden; }
+  .marquee__track { display: flex; width: max-content; gap: 34px; animation: marquee 26s linear infinite; }
+  .marquee__group { display: flex; align-items: center; gap: 34px; }
+  .marquee__word { font-family: var(--font-display); font-size: clamp(20px, 2.4vw, 30px); font-weight: 800; white-space: nowrap; }
+  .stroke { -webkit-text-stroke: 2px var(--cream); color: transparent; }
+  .ast { font-size: 20px; }
+
+  /* ---------- Section headers ---------- */
+  .sec { padding: 72px 0; }
+  @media (min-width: 1024px) { .sec { padding: 100px 0; } }
+  .sec__head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 18px; margin-bottom: 34px; }
+  .kicker { text-transform: uppercase; letter-spacing: .16em; font-size: 12px; font-weight: 800; color: var(--violet-deep); }
+  .sec h2 { font-size: clamp(1.8rem, 3.6vw, 2.9rem); font-weight: 900; margin-top: 8px; }
+
+  /* ---------- Feature grid ---------- */
+  .grid5 { display: grid; gap: 20px; }
+  @media (min-width: 640px) { .grid5 { grid-template-columns: 1fr 1fr; } }
+  @media (min-width: 1024px) { .grid5 { grid-template-columns: repeat(3, 1fr); } }
+  .card-hover { transition: transform .35s var(--ease), box-shadow .35s var(--ease); }
+  .card-hover:hover { transform: translateY(-8px) rotate(-1deg); }
+  .feature {
+    border-radius: 30px; padding: 26px; min-height: 300px;
+    display: flex; flex-direction: column; justify-content: space-between; overflow: hidden; position: relative;
+  }
+  .feature__top { display: flex; align-items: center; justify-content: space-between; }
+  .chip { display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; border-radius: 999px; font-size: 12px; font-weight: 800; background: rgba(255,255,255,.28); }
+  .feature__ico { font-size: 70px; text-align: center; margin: 10px 0; }
+  .feature h3 { font-size: 1.25rem; font-weight: 800; }
+  .feature p { font-size: 13.5px; opacity: .82; margin-top: 4px; font-weight: 600; }
+  .f-coral { background: var(--pink); color: #3b0a24; box-shadow: 0 18px 36px -14px rgba(244,114,182,.7); }
+  .f-sun { background: var(--amber); color: var(--ink); box-shadow: 0 18px 36px -14px rgba(251,191,36,.7); }
+  .f-teal { background: var(--mint); color: #052a21; box-shadow: 0 18px 36px -14px rgba(52,211,153,.7); }
+  .f-ink { background: var(--ink); color: var(--cream); }
+  .f-outline { background: var(--cream); border: 2px solid var(--ink); }
+  .wide { grid-column: span 2; min-height: 240px; }
+  @media (max-width: 639px) { .wide { grid-column: auto; } }
+  .wide .feature__ico { font-size: 96px; }
+
+  /* ---------- Services trio ---------- */
+  .trio-wrap { background: rgba(52,211,153,.08); position: relative; overflow: hidden; }
+  .trio { display: grid; gap: 24px; }
+  @media (min-width: 768px) { .trio { grid-template-columns: repeat(3, 1fr); align-items: start; } }
+  .service { border-radius: 30px; padding: 30px; background: var(--cream); border: 2px solid var(--ink); }
+  .service--ink { background: var(--ink); color: var(--cream); border-color: var(--ink); }
+  @media (min-width: 768px) { .service--ink { transform: translateY(-16px); } }
+  .service__chip { width: 64px; height: 64px; border-radius: 18px; display: grid; place-items: center; font-size: 26px; box-shadow: var(--shadow-sm); margin-bottom: 18px; }
+  .service h3 { font-size: 1.35rem; font-weight: 800; }
+  .service p { color: var(--ink-65); font-size: 14px; margin-top: 8px; font-weight: 500; }
+  .service--ink p { color: rgba(255,253,245,.7); }
+  .checks { list-style: none; padding: 0; margin: 18px 0 0; display: flex; flex-direction: column; gap: 10px; }
+  .checks li { display: flex; align-items: center; gap: 9px; font-size: 14px; font-weight: 600; }
+
+  /* ---------- Subject row ---------- */
+  .logos { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 22px 48px; color: var(--ink-45); }
+  .logo { display: flex; align-items: center; gap: 9px; font-family: var(--font-display); font-size: 20px; font-weight: 800; }
+  .logo span:first-child { font-size: 22px; }
+
+  /* ---------- CTA ---------- */
+  .cta-panel {
+    position: relative; overflow: hidden; border-radius: 40px;
+    background: var(--violet); color: #fff; text-align: center;
+    padding: 64px 28px;
+  }
+  @media (min-width: 1024px) { .cta-panel { padding: 84px 64px; } }
+  .cta-panel h2 { font-size: clamp(2.1rem, 5.2vw, 3.8rem); font-weight: 900; line-height: 1; }
+  .cta-panel p { color: rgba(255,255,255,.8); max-width: 34rem; margin: 16px auto 0; font-size: 16px; }
+  .cta-panel .btns { display: flex; flex-wrap: wrap; justify-content: center; gap: 14px; margin-top: 30px; }
+
+  /* ---------- Footer ---------- */
+  .footer { background: var(--ink); color: var(--cream); padding: 64px 0 34px; }
+  .footer__grid { display: grid; gap: 36px; padding-bottom: 40px; border-bottom: 1px solid rgba(255,253,245,.12); }
+  @media (min-width: 768px) { .footer__grid { grid-template-columns: 2fr 1fr 1fr 1.3fr; } }
+  .footer__brand { display: flex; align-items: center; gap: 11px; margin-bottom: 14px; }
+  .footer__brand .brand__logo { box-shadow: none; }
+  .footer p { color: rgba(255,253,245,.6); font-size: 14px; max-width: 20rem; line-height: 1.6; }
+  .socials { display: flex; gap: 10px; margin-top: 18px; }
+  .socials a { width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; background: rgba(255,253,245,.1); font-size: 16px; transition: background .2s; }
+  .socials a:hover { background: var(--pink); color: #3b0a24; }
+  .footer h4 { font-size: 12px; text-transform: uppercase; letter-spacing: .14em; color: rgba(255,253,245,.45); margin: 0 0 14px; font-weight: 800; }
+  .footer ul { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 11px; }
+  .footer li a { color: rgba(255,253,245,.75); font-size: 14px; font-weight: 600; }
+  .footer li a:hover { color: var(--pink); }
+  .footer__bottom { display: flex; flex-direction: column; gap: 10px; align-items: center; justify-content: space-between; padding-top: 26px; font-size: 13px; color: rgba(255,253,245,.45); }
+  @media (min-width: 640px) { .footer__bottom { flex-direction: row; } }
+
+  /* ---------- Reveal ---------- */
+  .reveal { opacity: 0; transform: translateY(24px); transition: opacity .6s ease, transform .7s var(--ease); }
+  .reveal.in { opacity: 1; transform: none; }
+  @media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition: none !important; }
+    .reveal { opacity: 1; transform: none; }
+  }
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <div class="wrap nav__in">
+    <a class="brand" href="index.html">
+      <span class="brand__logo" aria-hidden="true"><img src="assets/ydlogo.png" alt="" /></span>
+      <span class="brand__name">YD <span>Studios</span></span>
+    </a>
+    <nav class="nav__links" aria-label="Bölümler">
+      <a href="#features">Özellikler</a>
+      <a href="#services">Nasıl</a>
+      <a href="#subjects">Dersler</a>
+      <a href="app.html#lig">Sınıf Ligi</a>
+    </nav>
+    <a class="pill nav__cta" href="app.html">Uygulamayı Aç <span aria-hidden="true">↗</span></a>
+    <button class="nav__burger" id="burger" type="button" aria-label="Menüyü aç" aria-expanded="false">☰</button>
+  </div>
+  <div class="nav__mobile" id="mobileMenu">
+    <a href="#features">Özellikler</a>
+    <a href="#services">Nasıl çalışır</a>
+    <a href="#subjects">Dersler</a>
+    <a href="app.html#lig">Sınıf Ligi</a>
+    <a class="pill" href="app.html" style="justify-content:center">Uygulamayı Aç ↗</a>
+  </div>
+</header>
+
+<main>
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero__blobs" aria-hidden="true">
+      <div class="blob1 floaty-slow" style="position:absolute;top:30px;left:-60px;width:300px;height:300px;background:rgba(251,191,36,.35)"></div>
+      <div class="blob2 floaty" style="position:absolute;top:90px;right:-40px;width:170px;height:170px;background:rgba(52,211,153,.35)"></div>
+      <div class="spin-slow" style="position:absolute;bottom:60px;left:8%;width:64px;height:64px;border-radius:50%;border:2px dashed rgba(244,114,182,.6)"></div>
+      <div class="floaty" style="position:absolute;bottom:45%;right:12%;width:22px;height:22px;border-radius:50%;background:var(--pink)"></div>
+    </div>
+
+    <div class="wrap hero__grid">
+      <div class="reveal in">
+        <span class="eyebrow">👋 YD Studios · lise ve üniversite için</span>
+        <h1>Her hafta bir<br>adım daha <span class="accent">yakın<svg viewBox="0 0 220 18" aria-hidden="true"><path d="M3 13C56 5 165 4 217 9" fill="none" stroke="#FBBF24" stroke-width="7" stroke-linecap="round"/></svg></span>.</h1>
+        <p class="hero__lead">Program, soru takibi, deneme analizi, konu matrisi ve rütbe tek yerde. Çalışmanı bir sisteme dönüştür; her hafta ilerlediğini gör.</p>
+        <div class="hero__btns">
+          <a class="btn btn--primary" href="app.html">Uygulamaya Gir <span aria-hidden="true">↓</span></a>
+          <a class="btn btn--outline" href="#features">Özellikleri Gör <span aria-hidden="true">▶</span></a>
+        </div>
+        <div class="proof">
+          <div class="avatars" aria-hidden="true">
+            <span style="background:var(--pink);color:#3b0a24">A</span>
+            <span style="background:var(--mint);color:#052a21">Z</span>
+            <span style="background:var(--amber);color:#1E293B">M</span>
+          </div>
+          <p>Program, soru, deneme ve rütbe — hepsi tek bir akışta. Verilerin cihazında kalır.</p>
+        </div>
+      </div>
+
+      <div class="bento reveal in" aria-hidden="true">
+        <div class="badge floaty">%100<br>odak</div>
+        <div class="stat-card stat-card--wide card-teal floaty-slow">
+          <span class="stat-card__ico">✏️</span>
+          <div>
+            <div class="stat-card__label">Bu hafta çözülen soru</div>
+            <div class="stat-card__val">320</div>
+            <div class="stat-card__hint">12 blok tamamlandı</div>
+          </div>
+        </div>
+        <div class="stat-card card-sun floaty">
+          <span class="stat-card__ico">📊</span>
+          <div>
+            <div class="stat-card__label">Ortalama net</div>
+            <div class="stat-card__val">51.25</div>
+            <div class="stat-card__hint">son 5 deneme</div>
+          </div>
+        </div>
+        <div class="stat-card card-coral floaty-slow">
+          <span class="stat-card__ico">🏆</span>
+          <div>
+            <div class="stat-card__label">Toplam XP</div>
+            <div class="stat-card__val">4.2K</div>
+            <div class="stat-card__hint">Rütbe: Azimli</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MARQUEE -->
+  <div class="marquee" aria-hidden="true">
+    <div class="marquee__track">
+      <div class="marquee__group">
+        <span class="marquee__word">Program</span><span class="ast" style="color:var(--amber)">✳</span>
+        <span class="marquee__word stroke">Soru Takibi</span><span class="ast" style="color:var(--pink)">✳</span>
+        <span class="marquee__word">Deneme Analizi</span><span class="ast" style="color:var(--mint)">✳</span>
+        <span class="marquee__word stroke">Konu Matrisi</span><span class="ast" style="color:var(--amber)">✳</span>
+        <span class="marquee__word">Rütbe &amp; XP</span><span class="ast" style="color:var(--pink)">✳</span>
+        <span class="marquee__word stroke">Sınıf Ligi</span><span class="ast" style="color:var(--mint)">✳</span>
+      </div>
+      <div class="marquee__group">
+        <span class="marquee__word">Program</span><span class="ast" style="color:var(--amber)">✳</span>
+        <span class="marquee__word stroke">Soru Takibi</span><span class="ast" style="color:var(--pink)">✳</span>
+        <span class="marquee__word">Deneme Analizi</span><span class="ast" style="color:var(--mint)">✳</span>
+        <span class="marquee__word stroke">Konu Matrisi</span><span class="ast" style="color:var(--amber)">✳</span>
+        <span class="marquee__word">Rütbe &amp; XP</span><span class="ast" style="color:var(--pink)">✳</span>
+        <span class="marquee__word stroke">Sınıf Ligi</span><span class="ast" style="color:var(--mint)">✳</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- FEATURES -->
+  <section class="sec" id="features">
+    <div class="wrap">
+      <div class="sec__head reveal">
+        <div>
+          <div class="kicker">Neler var?</div>
+          <h2>Beş araç, tek ritim.</h2>
+        </div>
+        <a class="btn btn--outline" href="app.html">Hepsini Dene ↗</a>
+      </div>
+
+      <div class="grid5">
+        <article class="feature card-hover f-coral reveal">
+          <div class="feature__top"><span class="chip">Plan</span><span>↗</span></div>
+          <div class="feature__ico">🗓️</div>
+          <div><h3>Haftalık Program</h3><p>Saat aralığı ve hedef soruyla bloklar kur, tikle, gününü kopyala.</p></div>
+        </article>
+        <article class="feature card-hover f-sun reveal">
+          <div class="feature__top"><span class="chip">Ölç</span><span>↗</span></div>
+          <div class="feature__ico">✏️</div>
+          <div><h3>Soru &amp; Net</h3><p>Ders bazlı çözülen/doğru/yanlış gir; net ve başarı oranını gör.</p></div>
+        </article>
+        <article class="feature card-hover f-teal reveal">
+          <div class="feature__top"><span class="chip">Analiz</span><span>↗</span></div>
+          <div class="feature__ico">📝</div>
+          <div><h3>Deneme Analizi</h3><p>TYT/AYT netleri, sıralama ve yanlış konu etiketleriyle trend.</p></div>
+        </article>
+        <article class="feature card-hover f-ink wide reveal">
+          <div class="feature__top"><span class="chip" style="background:rgba(255,253,245,.14)">Harita</span><span>↗</span></div>
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:18px">
+            <div><h3 style="font-size:1.5rem">Konu Matrisi</h3><p style="max-width:24rem">9–12. sınıf, TYT/AYT, üniversite ve Maarif müfredatı; konu konu ilerleme.</p></div>
+            <div class="feature__ico" style="margin:0">📚</div>
+          </div>
+          <div class="blob1 spin-slow" aria-hidden="true" style="position:absolute;right:-40px;top:-30px;width:160px;height:160px;background:rgba(244,114,182,.35)"></div>
+        </article>
+        <article class="feature card-hover f-outline reveal">
+          <div class="feature__top"><span class="chip" style="background:rgba(30,41,59,.06)">Motivasyon</span><span>↗</span></div>
+          <div class="feature__ico">🏆</div>
+          <div><h3>Rütbe &amp; Lig</h3><p>Görevler, XP ve sınıf arkadaşlarınla sıralama; her gün ilerle.</p></div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- SERVICES -->
+  <section class="sec trio-wrap" id="services">
+    <div class="blob2 floaty" aria-hidden="true" style="position:absolute;top:40px;right:-50px;width:180px;height:180px;background:rgba(251,191,36,.35)"></div>
+    <div class="wrap" style="position:relative">
+      <div class="sec__head reveal" style="justify-content:center;text-align:center">
+        <div>
+          <div class="kicker" style="color:var(--mint-deep)">Nasıl çalışır?</div>
+          <h2>Planla. Ölç. Yüksel.</h2>
+        </div>
+      </div>
+      <div class="trio">
+        <article class="service card-hover reveal">
+          <div class="service__chip" style="background:var(--pink);color:#3b0a24">✎</div>
+          <h3>Planla</h3>
+          <p>Haftanı sıfırdan kur, blokları saat aralığıyla yerleştir, hedef soru koy.</p>
+          <ul class="checks">
+            <li><span style="color:var(--pink)">✔</span> Günü başka güne kopyala</li>
+            <li><span style="color:var(--pink)">✔</span> Hafif mod ile minimum hedef</li>
+          </ul>
+        </article>
+        <article class="service service--ink card-hover reveal">
+          <div class="service__chip" style="background:var(--amber);color:var(--ink);box-shadow:none">▦</div>
+          <h3>Ölç</h3>
+          <p>Soru ve deneme verilerini gir; net, başarı oranı ve grafiklerle gör.</p>
+          <ul class="checks">
+            <li><span style="color:var(--amber)">✔</span> Ders bazlı doğru/yanlış</li>
+            <li><span style="color:var(--amber)">✔</span> Sıralama &amp; net trendi</li>
+          </ul>
+        </article>
+        <article class="service card-hover reveal">
+          <div class="service__chip" style="background:var(--mint);color:#052a21">◉</div>
+          <h3>Yüksel</h3>
+          <p>Görevleri tamamla, XP kazan, rütbe atla ve sınıf liginde yarış.</p>
+          <ul class="checks">
+            <li><span style="color:var(--mint-deep)">✔</span> 9 rütbe kademesi</li>
+            <li><span style="color:var(--mint-deep)">✔</span> Haftalık görevler</li>
+          </ul>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- SUBJECTS -->
+  <section class="sec" id="subjects" style="padding-top:56px;padding-bottom:56px">
+    <div class="wrap">
+      <p style="text-align:center;font-size:14px;font-weight:700;color:var(--ink-45);margin-bottom:28px">Dersler ve müfredat hazır</p>
+      <div class="logos reveal">
+        <span class="logo"><span>📐</span>Matematik</span>
+        <span class="logo"><span>⚛️</span>Fizik</span>
+        <span class="logo"><span>🧪</span>Kimya</span>
+        <span class="logo"><span>🧬</span>Biyoloji</span>
+        <span class="logo"><span>📖</span>Edebiyat</span>
+        <span class="logo"><span>🏛️</span>Tarih</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="sec" id="contact" style="padding-top:20px;padding-bottom:80px">
+    <div class="wrap">
+      <div class="cta-panel reveal">
+        <div class="blob1 floaty" aria-hidden="true" style="position:absolute;top:-50px;left:-40px;width:200px;height:200px;background:rgba(251,191,36,.4)"></div>
+        <div class="blob2 floaty-slow" aria-hidden="true" style="position:absolute;bottom:-70px;right:-40px;width:240px;height:240px;background:rgba(52,211,153,.4)"></div>
+        <div class="spin-slow" aria-hidden="true" style="position:absolute;top:40px;right:18%;width:52px;height:52px;border-radius:50%;border:2px dashed rgba(255,253,245,.5)"></div>
+        <div style="position:relative;z-index:1">
+          <h2>Hazırsan başlayalım.</h2>
+          <p>Programını kur, ilk blokunu tamamla, ilk XP'ni kazan. Gerisi zaten akışta.</p>
+          <div class="btns">
+            <a class="btn btn--ink" href="app.html">Uygulamayı Aç ✈</a>
+            <a class="btn btn--cream" href="app.html#lig">Sınıf Ligine Bak</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="wrap">
+    <div class="footer__grid">
+      <div>
+        <div class="footer__brand">
+          <span class="brand__logo" aria-hidden="true"><img src="assets/ydlogo.png" alt="" /></span>
+          <span class="brand__name" style="color:var(--cream)">YD <span style="color:var(--pink)">Studios</span></span>
+        </div>
+        <p>Haftalık çalışma, soru, deneme, konu matrisi ve rütbe. Senin ritminde, senin cihazında.</p>
+        <div class="socials" aria-label="Sosyal">
+          <a href="app.html" aria-label="Uygulama">✦</a>
+          <a href="app.html#dashboard" aria-label="Özet">◔</a>
+          <a href="app.html#lig" aria-label="Lig">◈</a>
+          <a href="app.html#konular" aria-label="Konular">▤</a>
+        </div>
+      </div>
+      <div>
+        <h4>Uygulama</h4>
+        <ul>
+          <li><a href="app.html">Program</a></li>
+          <li><a href="app.html#questions">Soru Takibi</a></li>
+          <li><a href="app.html#exams">Deneme</a></li>
+          <li><a href="app.html#dashboard">Özet</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Keşfet</h4>
+        <ul>
+          <li><a href="app.html#konular">Konu Matrisi</a></li>
+          <li><a href="app.html#kaynaklar">Kaynaklar</a></li>
+          <li><a href="app.html#lig">Sınıf Ligi</a></li>
+          <li><a href="app.html#ayarlar">Ayarlar</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Not</h4>
+        <ul>
+          <li><a href="app.html#ayarlar">Verilerini dışa aktar</a></li>
+          <li><a href="app.html#ayarlar">Yazı tipi &amp; tema</a></li>
+          <li><a href="app.html">Çevrimdışı çalışır</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer__bottom">
+      <span>© 2026 YD Studios. Düzenli çalış, iyi hisset.</span>
+      <span>Yerel veri · PWA · Tek sayfa</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  (function () {
+    var burger = document.getElementById("burger");
+    var menu = document.getElementById("mobileMenu");
+    if (burger && menu) {
+      burger.addEventListener("click", function () {
+        var open = menu.classList.toggle("is-open");
+        burger.setAttribute("aria-expanded", open ? "true" : "false");
+      });
+      menu.querySelectorAll("a").forEach(function (a) {
+        a.addEventListener("click", function () {
+          menu.classList.remove("is-open");
+          burger.setAttribute("aria-expanded", "false");
+        });
+      });
+    }
+
+    // Reveal on scroll
+    var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (!reduce && "IntersectionObserver" in window) {
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); }
+        });
+      }, { threshold: 0.12 });
+      document.querySelectorAll(".reveal").forEach(function (el) { io.observe(el); });
+    } else {
+      document.querySelectorAll(".reveal").forEach(function (el) { el.classList.add("in"); });
+    }
+  })();
+</script>
+</body>
+</html>

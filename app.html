@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="description" content="YKS 11. Sınıf Sayısal için haftalık çalışma, soru, deneme, konu ve odak takip uygulaması." />
+  <meta name="theme-color" content="#FFFDF5" />
+  <meta name="color-scheme" content="light" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="YKS Tracker" />
+  <title>YKS Haftalık Takip</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" type="image/svg+xml" href="assets/icon.svg" />
+  <link rel="apple-touch-icon" href="assets/icon-192.png" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <a class="skip-link" href="#main">İçeriğe geç</a>
+
+  <header class="topbar">
+    <div class="topbar__brand">
+      <span class="topbar__logo" aria-hidden="true">YKS</span>
+      <div class="topbar__titles">
+        <strong>Haftalık Takip</strong>
+        <small id="weekLabel">—</small>
+      </div>
+    </div>
+    <div class="topbar__right">
+      <button id="countdownChip" class="chip chip--count" type="button" title="Sınava kalan süre" hidden></button>
+      <button id="rankChip" class="chip" type="button" title="Rütbe ve görevler"></button>
+    </div>
+    <input id="importFile" type="file" accept="application/json,.json" hidden />
+  </header>
+
+  <nav class="tabs" aria-label="Bölümler">
+    <button class="tab is-active" type="button" data-view="schedule" aria-current="page"><span class="tab__ico" aria-hidden="true">🗓️</span><span>Program</span></button>
+    <button class="tab" type="button" data-view="pomodoro"><span class="tab__ico" aria-hidden="true">⏱️</span><span>Odak</span></button>
+    <button class="tab" type="button" data-view="questions"><span class="tab__ico" aria-hidden="true">✏️</span><span>Soru</span></button>
+    <button class="tab" type="button" data-view="exams"><span class="tab__ico" aria-hidden="true">📝</span><span>Deneme</span></button>
+    <button class="tab" type="button" data-view="dashboard"><span class="tab__ico" aria-hidden="true">📊</span><span>Özet</span></button>
+    <button class="tab" type="button" data-view="daha"><span class="tab__ico" aria-hidden="true">⋯</span><span>Daha</span></button>
+  </nav>
+
+  <main id="main" class="content">
+    <!-- ===================== PROGRAM ===================== -->
+    <section id="view-schedule" class="view is-active" aria-labelledby="scheduleTitle">
+      <div class="view__head">
+        <h1 id="scheduleTitle">Haftalık Program</h1>
+        <p class="view__sub" id="scheduleSummary">—</p>
+      </div>
+
+      <div class="day-tabs" id="dayTabs" role="tablist" aria-label="Günler"></div>
+
+      <div class="schedule-toolbar">
+        <button id="btnAddBlock" class="btn btn--primary" type="button">＋ Blok Ekle</button>
+        <button id="btnCopyDay" class="btn" type="button">Günü Kopyala</button>
+        <button id="btnClearWeek" class="btn btn--danger" type="button">Haftayı Temizle</button>
+        <button id="btnNewWeek" class="btn btn--accent" type="button">Yeni Haftaya Geç</button>
+      </div>
+
+      <div id="blockList" class="block-list" aria-live="polite"></div>
+      <div id="blockEmpty" class="empty" hidden>
+        <p>Bu gün için henüz blok yok.</p>
+        <p class="empty__hint">“Blok Ekle” ile planını sıfırdan oluştur.</p>
+      </div>
+    </section>
+
+    <!-- ===================== ODAK ===================== -->
+    <section id="view-pomodoro" class="view" aria-labelledby="pomodoroTitle">
+      <div class="view__head">
+        <h1 id="pomodoroTitle">Odak Zamanlayıcısı</h1>
+        <p class="view__sub">Kısa odak bloklarıyla verimli çalış.</p>
+      </div>
+
+      <div class="card pomo">
+        <div class="pomo__presets" id="pomoPresets"></div>
+        <div class="pomo__custom">
+          <label for="pomoCustom">Özel (dk)</label>
+          <input id="pomoCustom" type="number" min="1" max="180" inputmode="numeric" placeholder="örn. 50" />
+          <button id="pomoSetCustom" class="btn" type="button">Uygula</button>
+        </div>
+
+        <div class="pomo__display">
+          <time id="pomoTime" datetime="PT25M">25:00</time>
+          <div class="pomo__progress" aria-hidden="true"><span id="pomoBar"></span></div>
+        </div>
+
+        <div class="pomo__controls">
+          <button id="pomoStart" class="btn btn--primary" type="button">Başlat</button>
+          <button id="pomoPause" class="btn" type="button" disabled>Duraklat</button>
+          <button id="pomoReset" class="btn btn--ghost" type="button">Sıfırla</button>
+        </div>
+
+        <div class="pomo__link">
+          <label for="pomoLink">Program bloğuna bağla (opsiyonel)</label>
+          <select id="pomoLink"><option value="">— Bağlı değil —</option></select>
+        </div>
+        <p class="pomo__note" id="pomoDoneNote" hidden>Bu odak bloğu tamamlandı. +15 XP 👏</p>
+      </div>
+    </section>
+
+    <!-- ===================== SORU ===================== -->
+    <section id="view-questions" class="view" aria-labelledby="questionsTitle">
+      <div class="view__head">
+        <h1 id="questionsTitle">Soru Çözüm Takibi</h1>
+        <p class="view__sub" id="questionsSummary">—</p>
+      </div>
+
+      <form id="questionForm" class="card form-grid" autocomplete="off">
+        <div class="field">
+          <label for="qSubject">Ders</label>
+          <select id="qSubject" required></select>
+        </div>
+        <div class="field">
+          <label for="qTopic">Konu</label>
+          <input id="qTopic" type="text" placeholder="örn. Türev" required />
+        </div>
+        <div class="field field--sm">
+          <label for="qSolved">Çözülen</label>
+          <input id="qSolved" type="number" min="0" inputmode="numeric" placeholder="0" required />
+        </div>
+        <div class="field field--sm">
+          <label for="qCorrect">Doğru</label>
+          <input id="qCorrect" type="number" min="0" inputmode="numeric" placeholder="0" required />
+        </div>
+        <div class="field field--sm">
+          <label for="qWrong">Yanlış</label>
+          <input id="qWrong" type="number" min="0" inputmode="numeric" placeholder="0" required />
+        </div>
+        <div class="field field--action">
+          <button class="btn btn--primary" type="submit">Kaydet</button>
+        </div>
+      </form>
+
+      <div id="subjectStats" class="stat-grid" aria-live="polite"></div>
+
+      <div class="list-head">
+        <h2>Kayıtlar</h2>
+        <span id="questionCount" class="badge">0</span>
+      </div>
+
+      <div class="filters" id="questionFilters">
+        <select id="qPeriod" aria-label="Dönem">
+          <option value="week">Bu hafta</option>
+          <option value="lastweek">Geçen hafta</option>
+          <option value="month">Bu ay</option>
+          <option value="all">Tüm zamanlar</option>
+        </select>
+        <select id="qFilterSubject" aria-label="Ders"></select>
+      </div>
+
+      <div id="questionList" class="record-list" aria-live="polite"></div>
+      <div id="questionEmpty" class="empty" hidden><p>Bu filtreye uyan kayıt yok.</p></div>
+    </section>
+
+    <!-- ===================== DENEME ===================== -->
+    <section id="view-exams" class="view" aria-labelledby="examsTitle">
+      <div class="view__head">
+        <h1 id="examsTitle">Deneme Sonuçları</h1>
+        <p class="view__sub">TYT / AYT deneme netlerini ve sıralamalarını kaydet, gelişimini izle.</p>
+      </div>
+
+      <div class="stat-grid" id="examStats" aria-live="polite"></div>
+
+      <div class="card chart-card">
+        <h2>Net Trendi</h2>
+        <div id="examTrend" class="chart-host"></div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card chart-card">
+          <h2>Ders Bazlı Ortalama Net</h2>
+          <div id="examSubjectChart" class="chart-host"></div>
+        </div>
+        <div class="card chart-card">
+          <h2>Sıralama Trendi</h2>
+          <div id="examRankTrend" class="chart-host"></div>
+        </div>
+      </div>
+
+      <div class="card chart-card">
+        <h2>En Çok Yanlış Yapılan Konular</h2>
+        <div id="examWrongTopics" class="charts-gap"></div>
+      </div>
+
+      <div class="schedule-toolbar">
+        <button id="btnAddExam" class="btn btn--primary" type="button">＋ Deneme Ekle</button>
+        <select id="examTypeFilter" aria-label="Deneme türü filtresi"></select>
+      </div>
+
+      <div class="list-head">
+        <h2>Deneme Kayıtları</h2>
+        <span id="examCount" class="badge">0</span>
+      </div>
+      <div id="examList" class="record-list" aria-live="polite"></div>
+      <div id="examEmpty" class="empty" hidden><p>Henüz deneme kaydı yok.</p></div>
+    </section>
+
+    <!-- ===================== NOTLAR (Daha menüsünden) ===================== -->
+    <section id="view-notlar" class="view" aria-labelledby="notesTitle">
+      <div class="view__head">
+        <h1 id="notesTitle">Eksik Konular &amp; Notlar</h1>
+        <p class="view__sub">Zorlanılan konuları ve önemli formülleri burada tut.</p>
+      </div>
+
+      <div class="grid-2">
+        <div>
+          <div class="list-head">
+            <h2>Eksik Konular</h2>
+            <span id="topicCount" class="badge">0</span>
+          </div>
+
+          <form id="topicForm" class="card form-grid" autocomplete="off">
+            <div class="field">
+              <label for="tSubject">Ders</label>
+              <select id="tSubject" required></select>
+            </div>
+            <div class="field">
+              <label for="tTitle">Konu / Başlık</label>
+              <input id="tTitle" type="text" placeholder="örn. Trigonometri" required />
+            </div>
+            <div class="field field--sm">
+              <label for="tPriority">Öncelik</label>
+              <select id="tPriority"></select>
+            </div>
+            <div class="field field--sm">
+              <label for="tStatus">Durum</label>
+              <select id="tStatus"></select>
+            </div>
+            <div class="field field--action">
+              <button class="btn btn--primary" type="submit">Ekle</button>
+            </div>
+          </form>
+
+          <div class="filters" id="topicFilters">
+            <select id="filterSubject"><option value="">Tüm dersler</option></select>
+            <select id="filterStatus"><option value="">Tüm durumlar</option></select>
+            <select id="filterPriority"><option value="">Tüm öncelikler</option></select>
+          </div>
+
+          <div id="topicList" class="record-list" aria-live="polite"></div>
+          <div id="topicEmpty" class="empty" hidden><p>Eksik konu eklenmedi.</p></div>
+        </div>
+
+        <div>
+          <div class="list-head">
+            <h2>Not / Formül Kartları</h2>
+            <span id="noteCount" class="badge">0</span>
+          </div>
+
+          <form id="noteForm" class="card" autocomplete="off">
+            <div class="field">
+              <label for="nSubject">Ders</label>
+              <select id="nSubject"></select>
+            </div>
+            <div class="field">
+              <label for="nTitle">Başlık</label>
+              <input id="nTitle" type="text" placeholder="örn. Türev kuralları" required />
+            </div>
+            <div class="field">
+              <label for="nBody">Not / Formül</label>
+              <textarea id="nBody" rows="3" placeholder="(u·v)' = u'·v + u·v' ..." required></textarea>
+            </div>
+            <button class="btn btn--primary" type="submit">Kart Ekle</button>
+          </form>
+
+          <div id="noteList" class="note-grid" aria-live="polite"></div>
+          <div id="noteEmpty" class="empty" hidden><p>Not kartı yok.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== ÖZET ===================== -->
+    <section id="view-dashboard" class="view" aria-labelledby="dashboardTitle">
+      <div class="view__head">
+        <h1 id="dashboardTitle">Özet &amp; Rütbe</h1>
+        <p class="view__sub" id="dashWeek">—</p>
+      </div>
+
+      <div id="dashRank" class="rank-host"></div>
+      <div id="lightBanner"></div>
+      <div id="goalCard" class="goal-host"></div>
+
+      <div class="stat-grid stat-grid--dash" id="dashCards"></div>
+
+      <div class="grid-2">
+        <div class="card chart-card">
+          <h2>Haftalık Soru Trendi</h2>
+          <div id="dashTrend" class="chart-host"></div>
+        </div>
+        <div class="card chart-card card--center">
+          <h2>Haftalık İlerleme</h2>
+          <div id="dashDonut" class="chart-host"></div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card chart-card">
+          <h2>Ders Bazlı Dağılım</h2>
+          <div id="dashSubjects" class="charts-gap"></div>
+        </div>
+        <div class="card chart-card">
+          <h2>Aktivite Haritası</h2>
+          <div id="dashHeatmap" class="chart-host"></div>
+        </div>
+      </div>
+
+      <div class="card chart-card">
+        <h2>Ders Doğru/Yanlış Analizi</h2>
+        <div id="subjectAnalysis" class="chart-host"></div>
+      </div>
+
+      <div class="card">
+        <div class="list-head"><h2>Görevler</h2></div>
+        <div id="quests" class="quests-wrap"></div>
+      </div>
+
+      <div class="card">
+        <div class="list-head"><h2>Haftalık Değerlendirme</h2></div>
+        <p class="view__sub" id="reviewWeekLabel"></p>
+        <textarea id="reviewNote" rows="3" placeholder="Bu hafta ne iyi gitti, ne aksadı?"></textarea>
+        <div class="head-actions" style="margin-top:10px">
+          <button id="btnSaveReview" class="btn btn--primary btn--sm" type="button">Notu Kaydet</button>
+        </div>
+        <div id="reviewHistory" class="review-history"></div>
+      </div>
+
+      <div class="card">
+        <div class="list-head"><h2>Son Kazanımlar</h2></div>
+        <div id="xpFeed" class="xp-feed"></div>
+      </div>
+
+      <div class="list-head">
+        <h2>Geçmiş Haftalar</h2>
+        <div class="head-actions">
+          <button id="btnExportHistory" class="btn btn--ghost btn--sm" type="button">CSV indir</button>
+          <button id="btnClearHistory" class="btn btn--danger btn--sm" type="button">Arşivi Temizle</button>
+        </div>
+      </div>
+      <div id="historyList" class="record-list" aria-live="polite"></div>
+      <div id="historyEmpty" class="empty" hidden><p>Arşivlenmiş hafta yok. “Yeni Haftaya Geç” ile haftayı arşivle.</p></div>
+    </section>
+
+    <!-- ===================== KONULAR / MÜFREDAT ===================== -->
+    <section id="view-konular" class="view" aria-labelledby="konularTitle">
+      <div class="view__head">
+        <h1 id="konularTitle">Konu Takip Matrisi</h1>
+        <p class="view__sub">11. Sınıf ve TYT konularını işaretle; genel ilerlemeyi gör.</p>
+      </div>
+
+      <div id="curriculumOverview"></div>
+
+      <div class="filters filters--labeled">
+        <div class="filter-field"><span>Müfredat</span><select id="currSystemSelect"></select></div>
+        <div class="filter-field"><span>Seviye (liste)</span><select id="currGradeFilter"></select></div>
+        <div class="filter-field"><span>Ders</span><select id="currSubjectFilter"></select></div>
+        <div class="filter-field"><span>Durum</span><select id="currStatusFilter"></select></div>
+      </div>
+
+      <form id="currAddForm" class="card form-grid" autocomplete="off">
+        <div class="field">
+          <label for="currGrade">Eklenecek Seviye</label>
+          <select id="currGrade"></select>
+        </div>
+        <div class="field">
+          <label for="currSubject">Ders</label>
+          <input id="currSubject" list="allSubjects" type="text" placeholder="örn. Matematik" />
+        </div>
+        <div class="field">
+          <label for="currTopic">Konu</label>
+          <input id="currTopic" type="text" placeholder="örn. Limit" />
+        </div>
+        <div class="field field--sm">
+          <label for="currStatus">Durum</label>
+          <select id="currStatus"></select>
+        </div>
+        <div class="field field--action">
+          <button class="btn btn--primary" type="submit">Ekle</button>
+        </div>
+      </form>
+
+      <div class="list-head">
+        <h2>Konular</h2>
+        <div class="head-actions">
+          <span id="currCount" class="badge">0</span>
+          <button id="btnSeedCurriculum" class="btn btn--ghost btn--sm" type="button">Hazır listeyi yükle</button>
+        </div>
+      </div>
+      <div id="curriculumList" class="record-list" aria-live="polite"></div>
+      <div id="curriculumEmpty" class="empty" hidden><p>Bu filtreye uyan konu yok.</p></div>
+    </section>
+
+    <!-- ===================== KAYNAKLAR ===================== -->
+    <section id="view-kaynaklar" class="view" aria-labelledby="kaynaklarTitle">
+      <div class="view__head">
+        <h1 id="kaynaklarTitle">Soru Bankası / Kaynak Takibi</h1>
+        <p class="view__sub">Hangi kitaptan kaç sayfa/test çözdüğünü takip et.</p>
+      </div>
+
+      <div id="resourceStats" class="stat-grid" aria-live="polite"></div>
+
+      <div class="schedule-toolbar">
+        <label class="inline-label">Günlük hedef
+          <input id="resDailyGoalInput" type="number" min="0" inputmode="numeric" />
+        </label>
+        <button id="btnSaveResGoal" class="btn btn--sm" type="button">Hedefi Kaydet</button>
+      </div>
+
+      <form id="resourceForm" class="card form-grid" autocomplete="off">
+        <div class="field">
+          <label for="resName">Kaynak Adı</label>
+          <input id="resName" type="text" placeholder="örn. 3D Matematik SB" required />
+        </div>
+        <div class="field">
+          <label for="resSubject">Ders</label>
+          <select id="resSubject"></select>
+        </div>
+        <div class="field field--sm">
+          <label for="resUnit">Birim</label>
+          <select id="resUnit"></select>
+        </div>
+        <div class="field field--sm">
+          <label for="resTotal">Toplam</label>
+          <input id="resTotal" type="number" min="0" inputmode="numeric" placeholder="örn. 320" />
+        </div>
+        <div class="field field--action">
+          <button class="btn btn--primary" type="submit">Ekle</button>
+        </div>
+      </form>
+
+      <div class="list-head">
+        <h2>Kaynaklar</h2>
+        <span id="resCount" class="badge">0</span>
+      </div>
+      <div id="resourceList" class="record-list" aria-live="polite"></div>
+      <div id="resourceEmpty" class="empty" hidden><p>Henüz kaynak eklenmedi.</p></div>
+    </section>
+
+    <!-- ===================== AYARLAR ===================== -->
+    <section id="view-ayarlar" class="view" aria-labelledby="ayarlarTitle">
+      <div class="view__head">
+        <h1 id="ayarlarTitle">Ayarlar</h1>
+        <p class="view__sub">Uygulamayı kendine göre uyarla.</p>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <h2>Görünüm</h2>
+          <div class="field" style="margin-top:10px">
+            <label for="fontSelect">Yazı Tipi</label>
+            <select id="fontSelect"></select>
+          </div>
+          <p class="field-hint">“Super Melon Hunter” için <code>assets/fonts/</code> klasörüne TTF dosyasını ekle; yüklü değilse yedek font kullanılır.</p>
+        </div>
+
+        <div class="card">
+          <h2>Geri Sayım</h2>
+          <div class="grid-2" style="margin-top:10px">
+            <div class="field">
+              <label for="targetDate">Hedef Tarih</label>
+              <input id="targetDate" type="date" />
+            </div>
+            <div class="field">
+              <label for="countdownLabel">Etiket</label>
+              <input id="countdownLabel" type="text" placeholder="YKS 2027" />
+            </div>
+          </div>
+          <button id="btnSaveCountdown" class="btn btn--primary btn--sm" type="button">Kaydet</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="switch-row">
+          <div>
+            <h2>Hafif Mod / Minimum Hedef</h2>
+            <p class="view__sub">Yorgun günlerde hedefi tek mini bloğa indirir; seni “geride kaldın” diye sıkıştırmaz.</p>
+          </div>
+          <label class="switch">
+            <input id="lightModeToggle" type="checkbox" />
+            <span class="switch__slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="switch-row">
+          <div>
+            <h2>Otomatik Yedek</h2>
+            <p class="view__sub">“Yeni Haftaya Geç” dediğinde JSON yedeğini otomatik indirir.</p>
+          </div>
+          <label class="switch">
+            <input id="autoBackupToggle" type="checkbox" />
+            <span class="switch__slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Dersler</h2>
+        <p class="view__sub">Kendi derslerini ekle; soru, not ve program formlarında görünür.</p>
+        <div id="subjectManager" class="subject-manager"></div>
+        <form id="addSubjectForm" class="inline-form">
+          <input id="newSubject" type="text" placeholder="Yeni ders adı (örn. Geometri)" />
+          <button class="btn btn--sm btn--primary" type="submit">Ekle</button>
+        </form>
+      </div>
+
+      <div class="card">
+        <div class="list-head">
+          <h2>Rütbeler</h2>
+          <div class="head-actions">
+            <button id="btnResetRanks" class="btn btn--ghost btn--sm" type="button">Sıfırla</button>
+            <button id="btnSaveRanks" class="btn btn--primary btn--sm" type="button">Kaydet</button>
+          </div>
+        </div>
+        <p class="view__sub">Seviye eşiği, ikon ve rütbe adını istediğin gibi değiştir.</p>
+        <div id="rankEditor" class="rank-editor"></div>
+      </div>
+
+      <div class="card">
+        <h2>Veri</h2>
+        <p class="view__sub">Cihazlar arası taşımak için dışa/içe aktar.</p>
+        <div class="head-actions">
+          <button id="btnExport" class="btn" type="button">⬇ Dışa Aktar (JSON)</button>
+          <button id="btnImport" class="btn" type="button">⬆ İçe Aktar (JSON)</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== Sınıf Ligi ===================== -->
+    <section id="view-lig" class="view" aria-labelledby="ligTitle">
+      <div class="view__head">
+        <h1 id="ligTitle">Sınıf Ligi</h1>
+        <p class="view__sub">Kullanıcı adınla sınıfındaki XP sıralamasına katıl. Arkadaşlarının JSON yedeğini içe aktararak onları da ekleyebilirsin.</p>
+      </div>
+
+      <form id="leagueProfileForm" class="card form-grid" autocomplete="off">
+        <div class="field">
+          <label for="leagueUsername">Kullanıcı Adı</label>
+          <input id="leagueUsername" type="text" placeholder="örn. Ayaz" required />
+        </div>
+        <div class="field">
+          <label for="leagueClass">Sınıf / Seviye</label>
+          <select id="leagueClass"></select>
+        </div>
+        <div class="field field--action">
+          <button class="btn btn--primary" type="submit">Profili Kaydet</button>
+        </div>
+      </form>
+
+      <div class="card">
+        <div class="list-head">
+          <h2>Sıralama</h2>
+          <div class="head-actions">
+            <select id="leagueClassFilter" aria-label="Sınıf filtresi"></select>
+            <span id="leagueStatus" class="pill pill--low">● —</span>
+            <span id="leagueCount" class="badge">0</span>
+            <button id="btnLeagueRefresh" class="btn btn--sm" type="button">Canlı Yenile</button>
+          </div>
+        </div>
+        <div id="leagueList" class="record-list" aria-live="polite"></div>
+        <div id="leagueEmpty" class="empty" hidden><p>Bu sınıfta kayıt yok.</p></div>
+      </div>
+
+      <div class="card">
+        <div class="list-head"><h2>Rakip Ekle</h2></div>
+        <form id="rivalForm" class="form-grid" autocomplete="off">
+          <div class="field">
+            <label for="rivalName">Rakip Adı</label>
+            <input id="rivalName" type="text" placeholder="örn. Zeynep" required />
+          </div>
+          <div class="field">
+            <label for="rivalClass">Sınıf</label>
+            <select id="rivalClass"></select>
+          </div>
+          <div class="field field--sm">
+            <label for="rivalXp">XP</label>
+            <input id="rivalXp" type="number" min="0" inputmode="numeric" value="0" />
+          </div>
+          <div class="field field--action">
+            <button class="btn btn--primary" type="submit">Ekle</button>
+          </div>
+        </form>
+        <p class="field-hint" style="margin-top:12px">Arkadaşının <b>Ayarlar → Dışa Aktar</b> ile indirdiği JSON dosyasını burada içe aktararak XP'sini ve sınıfını otomatik ekle:</p>
+        <div class="head-actions" style="margin-top:8px">
+<button id="btnImportRival" class="btn" type="button">⬆ Rakip JSON'u Yükle</button>
+          <input id="rivalImportFile" type="file" accept="application/json,.json" hidden />
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== DAHA ===================== -->
+    <section id="view-daha" class="view" aria-labelledby="dahaTitle">
+      <div class="view__head">
+        <h1 id="dahaTitle">Daha Fazla</h1>
+        <p class="view__sub">Çalışma araçları ve ayarlar.</p>
+      </div>
+
+      <div class="more-grid">
+        <button class="more-card" type="button" data-goto="lig">
+          <span class="more-card__ico">🏁</span>
+          <span class="more-card__title">Sınıf Ligi</span>
+          <span class="more-card__sub">Kullanıcı adı + XP sıralaması</span>
+        </button>
+        <button class="more-card" type="button" data-goto="konular">
+          <span class="more-card__ico">📚</span>
+          <span class="more-card__title">Konular / Müfredat</span>
+          <span class="more-card__sub">11. Sınıf & TYT konu takip matrisi</span>
+        </button>
+        <button class="more-card" type="button" data-goto="kaynaklar">
+          <span class="more-card__ico">📦</span>
+          <span class="more-card__title">Kaynak Takibi</span>
+          <span class="more-card__sub">Soru bankası sayfa/test ilerlemesi</span>
+        </button>
+        <button class="more-card" type="button" data-goto="notlar">
+          <span class="more-card__ico">📌</span>
+          <span class="more-card__title">Notlar</span>
+          <span class="more-card__sub">Eksik konular ve formül kartları</span>
+        </button>
+        <button class="more-card" type="button" data-goto="ayarlar">
+          <span class="more-card__ico">⚙️</span>
+          <span class="more-card__title">Ayarlar</span>
+          <span class="more-card__sub">Font, rütbe, dersler, veri</span>
+        </button>
+      </div>
+    </section>
+  </main>
+
+  <datalist id="allSubjects"></datalist>
+
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+
+  <div id="modal" class="modal" hidden>
+    <div class="modal__backdrop" data-close="true"></div>
+    <div class="modal__panel" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="modal__head">
+        <h2 id="modalTitle">Başlık</h2>
+        <button class="modal__close" type="button" data-close="true" aria-label="Kapat">✕</button>
+      </div>
+      <div class="modal__body" id="modalBody"></div>
+      <div class="modal__foot" id="modalFoot"></div>
+    </div>
+  </div>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
